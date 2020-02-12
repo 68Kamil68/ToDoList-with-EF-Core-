@@ -14,7 +14,7 @@ namespace ToDoList.Models
         [Required]
         public string Value { get; set; }
         [Required]
-        public bool? Deleted { get; set; } = false;
+        public bool Deleted { get; set; } = false;
         public User User { get; set; }
     }
 }
