@@ -11,9 +11,9 @@ namespace ToDoList.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TodoID { get; set; }
+        public int UserID { get; set; }
         [Required]
         public string Value { get; set; }
-        [Required]
         public bool Deleted { get; set; } = false;
         public User User { get; set; }
     }
