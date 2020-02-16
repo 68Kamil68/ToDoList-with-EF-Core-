@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using ToDoList.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.OpenApi.Models;
 
 
 namespace ToDoList
@@ -29,6 +30,11 @@ namespace ToDoList
 
             services.AddDbContext<TodoContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -54,6 +60,12 @@ namespace ToDoList
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("v1/swagger.json", "My API V1");
+            });
 
             app.UseRouting();
 

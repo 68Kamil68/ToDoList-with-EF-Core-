@@ -21,26 +21,21 @@ namespace ToDoList.Controllers
             _context = context;
         }
 
-        // GET: api/Todos
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
-        {
-            return await _context.Todos.ToListAsync();
+        //// GET: api/Todos
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
+        //{
+        //    return await _context.Todos.ToListAsync();
+        //}
+
+        // GET: api/Todos/
+        [HttpGet("{userID}")]
+        //[Route("{GetUserTodos}")]
+        public async Task<ActionResult<IEnumerable<Todo>>> GetTodosOfUser(int userID)
+        {        
+            return await _context.Todos.Where(td => td.UserID == userID).ToListAsync();
         }
 
-        // GET: api/Todos/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Todo>> GetTodo(int id)
-        {
-            var todo = await _context.Todos.FindAsync(id);
-
-            if (todo == null)
-            {
-                return NotFound();
-            }
-
-            return todo;
-        }
 
         // PUT: api/Todos/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
