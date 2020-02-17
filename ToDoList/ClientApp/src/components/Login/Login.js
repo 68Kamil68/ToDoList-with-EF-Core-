@@ -2,7 +2,6 @@
 import './Login.css';
 
 const login = (props) => {
-    props.id = 10;
     return (
         <div className="login">
             <p className="logPas">Login:</p>
