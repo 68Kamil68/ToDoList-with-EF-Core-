@@ -1,0 +1,18 @@
+.login {
+    border: solid 2px lightblue;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+
+.input {
+    margin-top: 12px;
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
+.logPas {
+    margin-left: 10px;
+    display: inline-block;
+}
+
