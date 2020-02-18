@@ -7,23 +7,19 @@ export class Home extends Component {
   state = {
     logged: false,
     userID: 0,
-    todos: [{value: 'kokok'}, {value:'kokos'}]
+    todos: [{ todoID: 1, value: 'kokok' }, { todoID: 2, value: 'kokos' }],
+    XP: null,
+    Level: null
   }
 
   loginForm = {
-    nickname: '',
-    password: ''
+    Nickname: '',
+    Password: ''
   }
 
   error = false;
   errorMessage = null;
 
-  updateFieldNick = (e) => {
-    this.loginForm = {
-      ...this.loginForm,
-      nickname: e.target.value
-    }
-  }
 
   updateField = (e) => {
     this.loginForm = {
@@ -32,9 +28,8 @@ export class Home extends Component {
     }
   }
   
-
   validateLoginForm = () => {
-    if (!this.loginForm.nickname | !this.loginForm.password)
+    if (!this.loginForm.Nickname | !this.loginForm.Password)
     {
       this.error = true;
       this.errorMessage = 'Uzupelnij dane logowania';
@@ -43,17 +38,61 @@ export class Home extends Component {
     return true;
   }
 
-  login = (e) => {
+  getUserTodos = async (e) => {
+      await fetch(`/api/Todos/GetUserTodos?UserID=${this.state.userID}`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      }).then(res => res.json()).then(data => {
+        console.log(data[0]);
+        this.mapTodos(data[0]);
+      });
+  }
+    // TODO: fix mapping todos
+  mapTodos = (todosData) => {
+    todosData.forEach(td => {
+      let todoID = td.todoID;
+      let todoValue = td.value;
+      this.setState({
+        todos: [...this.state.todos, {todoID: {todoID}, value: {todoValue}}]
+      });
+    });
+  }  
+
+  login = async (e) => {
     console.log(this.loginForm);
     if(this.validateLoginForm())
     {
-      this.setState({logged: true});
+      const response = await fetch('/api/Users/Login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.loginForm),
+      })
+
+      response.json().then(data => {
+          console.log(data);
+          if (data.status != 400) {
+              this.setState({ userID: data.userID, XP: data.xp, Level: data.level });
+              this.setState({ logged: true });
+              this.getUserTodos();
+          }
+          else {
+              this.errorMessage = "Check your nickname and password and try again";
+              this.setState({ logged: false });
+          }
+      });  
+      
     }
     else
     {
       this.setState({logged: false});
     }
   }
+
+  
 
   render () {
     let loginView = null;
@@ -62,10 +101,10 @@ export class Home extends Component {
       loginView = (
         <div className="login">
             <p className="logPas">Login:</p>
-            <input type="text"  className="input" name="nickname" onChange={this.updateField}/>
+            <input type="text"  className="input" name="Nickname" onChange={this.updateField}/>
             <br/>
             <p className="logPas">Password:</p>
-            <input type="password" className="input" name="password" onChange={this.updateField}/>
+            <input type="password" className="input" name="Password" onChange={this.updateField}/>
             <p>{this.errorMessage}</p>
             <button onClick = {this.login}>Log in</button>
             <button>Register</button>
@@ -76,7 +115,9 @@ export class Home extends Component {
     if(this.state.logged)
     {
       todosView = (
-        <Todo Todos= {this.state.todos}/>
+          <div>
+              {this.state.todos.map(td => <div>{td.value}</div>)}  
+          </div>
       )
     }
 

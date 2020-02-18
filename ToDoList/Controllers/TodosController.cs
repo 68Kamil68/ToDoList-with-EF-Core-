@@ -25,7 +25,7 @@ namespace ToDoList.Controllers
         [HttpGet]
         [Route("GetUserTodos")]
         public async Task<ActionResult<IEnumerable<Todo>>> GetTodosOfUser(int userID)
-        {        
+        {
             return await _context.Todos.Where(td => td.UserID == userID).ToListAsync();
         }
 

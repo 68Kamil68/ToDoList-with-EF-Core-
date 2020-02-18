@@ -54,7 +54,7 @@ namespace ToDoList.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<ActionResult<User>> Login(LoginModel user)
+        public async Task<ActionResult<User>> Login([FromBody]LoginModel user)
         {
             var userInDB = await _context.Users.FirstOrDefaultAsync(u => u.Nickname == user.Nickname);
             if (userInDB == null)
