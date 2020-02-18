@@ -32,6 +32,8 @@ namespace ToDoList.Data
             var todos = new Todo[]
             {
                 new Todo{Value = "Wyniesc smieci", UserID = 1},
+                new Todo{Value = "Wyniesc smiecidd", UserID = 1},
+                new Todo{Value = "Wyniesc smieciss", UserID = 1},
                 new Todo{Value = "Zjesc jablko", UserID = 2}
             };
 

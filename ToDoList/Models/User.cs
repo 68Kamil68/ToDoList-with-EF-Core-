@@ -17,8 +17,6 @@ namespace ToDoList.Models
         [Required]
         public string Password { get; set; }
         [Required]
-        public int Level { get; set; } = 1;
-        [Required]
         public int XP { get; set; } = 0;
         public ICollection<Todo> Todos { get; set; }
     }

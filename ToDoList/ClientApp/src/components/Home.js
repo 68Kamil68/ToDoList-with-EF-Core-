@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import Todo from './Todo/Todo';
 import './Home.css';
+import './Login/Login.css';
 
 export class Home extends Component {
   static displayName = Home.name;
   state = {
     logged: false,
     userID: 0,
-    todos: [{ todoID: 1, value: 'kokok' }, { todoID: 2, value: 'kokos' }],
+    todos: [],
     XP: null,
     Level: null
   }
@@ -28,13 +28,18 @@ export class Home extends Component {
     }
   }
   
-  validateLoginForm = () => {
+  validateForm = () => {
     if (!this.loginForm.Nickname | !this.loginForm.Password)
     {
       this.error = true;
-      this.errorMessage = 'Uzupelnij dane logowania';
+      this.errorMessage = 'Not all fields are filled';
       return false;
     }
+      if (this.loginForm.Nickname.length > 20) {
+          this.error = true;
+          this.errorMessage = 'Login must be up to 20 characters';
+          return false;
+      }
     return true;
   }
 
@@ -46,23 +51,23 @@ export class Home extends Component {
           }
       }).then(res => res.json()).then(data => {
         console.log(data[0]);
-        this.mapTodos(data[0]);
+        this.mapTodos(data);
       });
   }
     // TODO: fix mapping todos
   mapTodos = (todosData) => {
-    todosData.forEach(td => {
+      todosData.forEach(td => {
       let todoID = td.todoID;
       let todoValue = td.value;
       this.setState({
-        todos: [...this.state.todos, {todoID: {todoID}, value: {todoValue}}]
+          todos: [...this.state.todos, { todoID: todoID, value: todoValue}]
       });
     });
   }  
 
   login = async (e) => {
     console.log(this.loginForm);
-    if(this.validateLoginForm())
+    if(this.validateForm())
     {
       const response = await fetch('/api/Users/Login', {
         method: 'POST',
@@ -74,8 +79,13 @@ export class Home extends Component {
 
       response.json().then(data => {
           console.log(data);
-          if (data.status != 400) {
-              this.setState({ userID: data.userID, XP: data.xp, Level: data.level });
+          if (data.status !== 400) {
+              let xp = data.xp.toString().split('');
+              this.setState({
+                  userID: data.userID,
+                  XP: xp.slice(-2).join(''),
+                  Level: xp.slice(0, xp.length - 2).join('')
+              });
               this.setState({ logged: true });
               this.getUserTodos();
           }
@@ -92,6 +102,38 @@ export class Home extends Component {
     }
   }
 
+  register = async (e) => {
+      console.log(this.loginForm);
+      if (this.validateForm()) {
+          const response = await fetch('/api/Users/Register', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(this.loginForm),
+          })
+      response.json().then(data => {
+          console.log(data);
+          if (data.status !== 400) {
+              let xp = data.xp.toString().split('');
+              this.setState({
+                  userID: data.userID,
+                  XP: xp.slice(-2).join(''),
+                  Level: xp.slice(0, xp.length - 2).join('')
+              });
+              this.setState({ logged: true });
+          }
+          else {
+              this.errorMessage = "Username arleady taken";
+              this.setState({ logged: false });
+          }
+      });
+    }
+    else
+    {
+    this.setState({ logged: false });
+    }
+  }
   
 
   render () {
@@ -107,7 +149,7 @@ export class Home extends Component {
             <input type="password" className="input" name="Password" onChange={this.updateField}/>
             <p>{this.errorMessage}</p>
             <button onClick = {this.login}>Log in</button>
-            <button>Register</button>
+            <button onClick= {this.register}>Register</button>
         </div>
       )
     };
@@ -116,7 +158,7 @@ export class Home extends Component {
     {
       todosView = (
           <div>
-              {this.state.todos.map(td => <div>{td.value}</div>)}  
+              {this.state.todos.map(td => <div key={td.todoID}>{td.value}</div>)}  
           </div>
       )
     }
