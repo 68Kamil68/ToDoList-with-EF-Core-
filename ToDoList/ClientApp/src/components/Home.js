@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt, faPen } from '@fortawesome/free-solid-svg-icons'
 import './Home.css';
 import './Login/Login.css';
 
@@ -134,8 +136,14 @@ export class Home extends Component {
     this.setState({ logged: false });
     }
   }
-  
 
+  deleteTodo = (todoID) => {
+
+  }
+
+  editTodo = (todoID) => {
+
+  }
   render () {
     let loginView = null;
     let todosView = null;
@@ -158,7 +166,12 @@ export class Home extends Component {
     {
       todosView = (
           <div>
-              {this.state.todos.map(td => <div key={td.todoID}>{td.value}</div>)}  
+              {this.state.todos.map(td => <div key={td.todoID}>
+                  {td.value}
+                  <input type="radio" name="Done"/>
+                  <button onClick={this.deleteTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faTrashAlt} /></button>
+                  <button onClick={this.editTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faPen} /></button>
+              </div>)}  
           </div>
       )
     }
