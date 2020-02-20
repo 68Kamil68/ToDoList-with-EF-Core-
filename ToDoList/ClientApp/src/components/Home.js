@@ -58,12 +58,13 @@ export class Home extends Component {
   }
     // TODO: fix mapping todos
     mapTodos = (todosData) => {
+      this.setState({ todos: [] });
 
       todosData.forEach(td => {
       let todoID = td.todoID;
       let todoValue = td.value;
       this.setState({
-          todos: [...this.state.todos, { todoID: todoID, value: todoValue}]
+          todos: [...this.state.todos.filter(td => td.todoID !== -1), { todoID: todoID, value: todoValue}]
       });
     });
   }  
@@ -145,7 +146,7 @@ export class Home extends Component {
               'Content-Type': 'application/json',
           }
       });
-      this.setState({ todos: [{ todoID: -1, value: 'deleted' }] });
+      //this.setState({ todos: [{ todoID: -1, value: 'deleted' }] });
       this.getUserTodos();
   }
 
