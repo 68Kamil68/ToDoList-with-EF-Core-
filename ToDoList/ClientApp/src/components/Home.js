@@ -45,7 +45,7 @@ export class Home extends Component {
     return true;
   }
 
-  getUserTodos = async (e) => {
+  getUserTodos = async () => {
       await fetch(`/api/Todos/GetUserTodos?UserID=${this.state.userID}`, {
           method: 'GET',
           headers: {
@@ -57,7 +57,8 @@ export class Home extends Component {
       });
   }
     // TODO: fix mapping todos
-  mapTodos = (todosData) => {
+    mapTodos = (todosData) => {
+
       todosData.forEach(td => {
       let todoID = td.todoID;
       let todoValue = td.value;
@@ -137,8 +138,15 @@ export class Home extends Component {
     }
   }
 
-  deleteTodo = (todoID) => {
-
+  deleteTodo = async (todoID) => {
+      await fetch(`/api/Todos/${todoID}`, {
+          method: 'DELETE',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      });
+      this.setState({ todos: [{ todoID: -1, value: 'deleted' }] });
+      this.getUserTodos();
   }
 
   editTodo = (todoID) => {
@@ -156,8 +164,8 @@ export class Home extends Component {
             <p className="logPas">Password:</p>
             <input type="password" className="input" name="Password" onChange={this.updateField}/>
             <p>{this.errorMessage}</p>
-            <button onClick = {this.login}>Log in</button>
-            <button onClick= {this.register}>Register</button>
+            <button onClick = {() => this.login()}>Log in</button>
+            <button onClick= {() => this.register()}>Register</button>
         </div>
       )
     };
@@ -169,8 +177,8 @@ export class Home extends Component {
               {this.state.todos.map(td => <div key={td.todoID}>
                   {td.value}
                   <input type="radio" name="Done"/>
-                  <button onClick={this.deleteTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faTrashAlt} /></button>
-                  <button onClick={this.editTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faPen} /></button>
+                  <button onClick={() => this.deleteTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faTrashAlt} /></button>
+                  <button onClick={() => this.editTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faPen} /></button>
               </div>)}  
           </div>
       )

@@ -82,7 +82,7 @@ namespace ToDoList.Controllers
                                     new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature) 
                 );
             var token = new JwtSecurityTokenHandler().WriteToken(JWToken);
-            //HttpContext.Session.SetString("JWToken", token);
+            HttpContext.Session.SetString("JWToken", token);
 
             return userInDB;
         }

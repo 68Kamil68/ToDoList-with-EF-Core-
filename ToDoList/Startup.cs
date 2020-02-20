@@ -93,6 +93,19 @@ namespace ToDoList
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseSession();
+
+            app.Use(async (context, next) =>
+            {
+                var JWToken = context.Session.GetString("JWToken");
+                if (!string.IsNullOrEmpty(JWToken))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
+                }
+                await next();
+            });
+            app.UseAuthentication();
+
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -109,18 +122,6 @@ namespace ToDoList
                     pattern: "{controller}/{action=Index}/{id?}");
             });
 
-            app.UseSession();
-
-            app.Use(async (context, next) =>
-            {
-                var JWToken = context.Session.GetString("JWToken");
-                if (!string.IsNullOrEmpty(JWToken))
-                {
-                    context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
-                }
-                await next();
-            });
-            app.UseAuthentication();
 
             app.UseSpa(spa =>
             {

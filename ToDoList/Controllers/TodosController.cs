@@ -26,6 +26,11 @@ namespace ToDoList.Controllers
         [Route("GetUserTodos")]
         public async Task<ActionResult<IEnumerable<Todo>>> GetTodosOfUser(int userID)
         {
+            if(HttpContext.Session.GetString("JWToken") == null)
+            {
+                return BadRequest();
+            }
+            
             return await _context.Todos.Where(td => td.UserID == userID).ToListAsync();
         }
 
