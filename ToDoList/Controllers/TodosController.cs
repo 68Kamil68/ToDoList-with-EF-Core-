@@ -87,8 +87,7 @@ namespace ToDoList.Controllers
             {
                 return NotFound();
             }
-
-            _context.Todos.Remove(todo);
+            todo.Deleted = true;
             await _context.SaveChangesAsync();
 
             return todo;

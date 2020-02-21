@@ -63,8 +63,9 @@ export class Home extends Component {
       todosData.forEach(td => {
       let todoID = td.todoID;
       let todoValue = td.value;
+      let todoDeleted = td.deleted;
       this.setState({
-          todos: [...this.state.todos.filter(td => td.todoID !== -1), { todoID: todoID, value: todoValue}]
+          todos: [...this.state.todos, { todoID: todoID, value: todoValue, deleted: todoDeleted}]
       });
     });
   }  
@@ -146,13 +147,27 @@ export class Home extends Component {
               'Content-Type': 'application/json',
           }
       });
-      //this.setState({ todos: [{ todoID: -1, value: 'deleted' }] });
       this.getUserTodos();
   }
 
   editTodo = (todoID) => {
 
   }
+  addTodo = async () => {
+      let todoToAdd = {
+          userID: this.state.userID,
+          value: document.getElementById("todoToAdd").value
+      };
+      await fetch("/api/Todos/", {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(todoToAdd)
+      });
+      this.getUserTodos();
+  }
+
   render () {
     let loginView = null;
     let todosView = null;
@@ -175,12 +190,15 @@ export class Home extends Component {
     {
       todosView = (
           <div>
-              {this.state.todos.map(td => <div key={td.todoID}>
+              {this.state.todos.filter(td => td.deleted !== true).map(td =>
+                  <div key={td.todoID}>
                   {td.value}
                   <input type="radio" name="Done"/>
                   <button onClick={() => this.deleteTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faTrashAlt} /></button>
                   <button onClick={() => this.editTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faPen} /></button>
               </div>)}  
+              <input type="text" id="todoToAdd"/>
+              <button onClick={() => this.addTodo()} className="btn"><FontAwesomeIcon icon={faPen} /></button>
           </div>
       )
     }
