@@ -3,6 +3,6 @@
 
 Simple todo list application
 
-![](screen.jpg)
+![](screenshot.jpg)
 
 
