@@ -34,44 +34,17 @@ namespace ToDoList.Controllers
             return await _context.Todos.Where(td => td.UserID == userID).ToListAsync();
         }
 
-        // PUT: api/Todos/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodo(int id, Todo todo)
-        {
-            if (id != todo.TodoID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(todo).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Todos
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
         public async Task<ActionResult<Todo>> PostTodo(Todo todo)
         {
+            if (HttpContext.Session.GetString("JWToken") == null)
+            {
+                return BadRequest();
+            }
+
             _context.Todos.Add(todo);
             await _context.SaveChangesAsync();
 
@@ -82,6 +55,11 @@ namespace ToDoList.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Todo>> DeleteTodo(int id)
         {
+            if (HttpContext.Session.GetString("JWToken") == null)
+            {
+                return BadRequest();
+            }
+
             var todo = await _context.Todos.FindAsync(id);
             if (todo == null)
             {
@@ -93,9 +71,5 @@ namespace ToDoList.Controllers
             return todo;
         }
 
-        private bool TodoExists(int id)
-        {
-            return _context.Todos.Any(e => e.TodoID == id);
-        }
     }
 }

@@ -1,0 +1,30 @@
+﻿.todos {
+    border: solid 2px lightblue;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    margin-left: 5px;
+    margin-right: 1px;
+    font-size: 12px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    float: right;
+    clear: right;
+}
+
+
+
+.todoText {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    float: left;
+    clear: left;
+    text-align: right;
+    text-shadow: 6px;
+}

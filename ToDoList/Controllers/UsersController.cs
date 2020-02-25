@@ -24,41 +24,37 @@ namespace ToDoList.Controllers
             _context = context;
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
-        }
 
         // POST: api/Users
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult<User>> Register(User user)
+        public async Task<ActionResult<UserInfoModel>> Register(User user)
         {
+
             if (_context.Users.Any(u => u.Nickname == user.Nickname))
             {
                 return BadRequest();
             }
+
+            string pass = user.Password;
+            // hashing password
+            byte[] data = Encoding.ASCII.GetBytes(pass);
+            data = new System.Security.Cryptography.SHA256Managed().ComputeHash(data);
+            string hash = Encoding.ASCII.GetString(data);
+
+            user.Password = hash;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            var logged = await Login(new LoginModel { Nickname = user.Nickname, Password = user.Password });
+            var logged = await Login(new LoginModel { Nickname = user.Nickname, Password = pass });
 
             return logged;
         }
 
         [HttpPost]
         [Route("Login")]
-        public async Task<ActionResult<User>> Login([FromBody]LoginModel user)
+        public async Task<ActionResult<UserInfoModel>> Login([FromBody]LoginModel user)
         {
             var userInDB = await _context.Users.FirstOrDefaultAsync(u => u.Nickname == user.Nickname);
             if (userInDB == null)
@@ -66,7 +62,12 @@ namespace ToDoList.Controllers
                 return BadRequest();
             }
 
-            if (userInDB.Password != user.Password)
+            string pass = user.Password;
+            byte[] data = Encoding.ASCII.GetBytes(pass);
+            data = new System.Security.Cryptography.SHA256Managed().ComputeHash(data);
+            string hash = Encoding.ASCII.GetString(data);
+
+            if (userInDB.Password != hash)
             {
                 return BadRequest();
             }
@@ -84,7 +85,7 @@ namespace ToDoList.Controllers
             var token = new JwtSecurityTokenHandler().WriteToken(JWToken);
             HttpContext.Session.SetString("JWToken", token);
 
-            return userInDB;
+            return new UserInfoModel { userID = userInDB.UserID, XP = userInDB.XP };
         }
 
         // DELETE: api/Users/5
@@ -101,11 +102,6 @@ namespace ToDoList.Controllers
             await _context.SaveChangesAsync();
 
             return user;
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.UserID == id);
         }
     }
 }

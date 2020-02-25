@@ -3,15 +3,7 @@
 }
 
 .Input {
-    display: block;
+    display: inline-block;
+    float: left;
 }
 
-.btn {
-    background-color: DodgerBlue;
-    border: none;
-    color: white;
-    margin-left: 5px;
-    margin-right: 1px;
-    font-size: 12px;
-    cursor: pointer;
-}

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faPen } from '@fortawesome/free-solid-svg-icons'
 import './Home.css';
-import './Login/Login.css';
+import './Login.css';
+import './Todos.css';
 
 export class Home extends Component {
   static displayName = Home.name;
@@ -56,7 +57,7 @@ export class Home extends Component {
         this.mapTodos(data);
       });
   }
-    // TODO: fix mapping todos
+
     mapTodos = (todosData) => {
       this.setState({ todos: [] });
 
@@ -71,7 +72,6 @@ export class Home extends Component {
   }  
 
   login = async (e) => {
-    console.log(this.loginForm);
     if(this.validateForm())
     {
       const response = await fetch('/api/Users/Login', {
@@ -95,7 +95,7 @@ export class Home extends Component {
               this.getUserTodos();
           }
           else {
-              this.errorMessage = "Check your nickname and password and try again";
+              this.errorMessage = "Check your credentials";
               this.setState({ logged: false });
           }
       });  
@@ -150,9 +150,6 @@ export class Home extends Component {
       this.getUserTodos();
   }
 
-  editTodo = (todoID) => {
-
-  }
   addTodo = async () => {
       let todoToAdd = {
           userID: this.state.userID,
@@ -179,9 +176,10 @@ export class Home extends Component {
             <br/>
             <p className="logPas">Password:</p>
             <input type="password" className="input" name="Password" onChange={this.updateField}/>
-            <p>{this.errorMessage}</p>
-            <button onClick = {() => this.login()}>Log in</button>
-            <button onClick= {() => this.register()}>Register</button>
+              <br />
+              <p className="errorMsg">{this.errorMessage}</p>
+            <button className="logBtn" onClick={() => this.register()}>Register</button>
+            <button className="logBtn" onClick={() => this.login()}>Log in</button>
         </div>
       )
     };
@@ -189,16 +187,14 @@ export class Home extends Component {
     if(this.state.logged)
     {
       todosView = (
-          <div>
+          <div className="todos">
+              <input type="text" id="todoToAdd" className="todoInput" placeholder="todo to add..." />
+              <button onClick={() => this.addTodo()} className="btn"><FontAwesomeIcon icon={faPen} size="xl"/></button>
               {this.state.todos.filter(td => td.deleted !== true).map(td =>
-                  <div key={td.todoID}>
-                  {td.value}
-                  <input type="radio" name="Done"/>
-                  <button onClick={() => this.deleteTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faTrashAlt} /></button>
-                  <button onClick={() => this.editTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faPen} /></button>
+                  <div className="singleTodo" key={td.todoID}>
+                  <h6 className="todoText">{td.value}</h6>
+                  <button onClick={() => this.deleteTodo(td.todoID)} className="btn"><FontAwesomeIcon icon={faTrashAlt} size="xl"/></button>
               </div>)}  
-              <input type="text" id="todoToAdd"/>
-              <button onClick={() => this.addTodo()} className="btn"><FontAwesomeIcon icon={faPen} /></button>
           </div>
       )
     }
